@@ -27,29 +27,22 @@ def get_random_quote():
             print("No quotes available, Boss, restarting...")
             quotesf.close()
             prepare_quotes()
-            #do rest of normal function
-            with open('preparedQuotes.txt', 'r', encoding='utf-8-sig') as quotesf:
-                quotes = quotesf.read().split('%')
-                random_quote = random.choice(quotes)
-                quotes.remove(random_quote)
-                with open('preparedQuotes.txt', 'w', encoding='utf-8-sig') as quotesf:
-                    quotesf.write('%'.join(quotes))
-                return random_quote
-        else:
-            random_quote = random.choice(quotes)
+            return get_random_quote()  # Recursive call to get a quote from the newly prepared file
 
-            # Remove the quote from the list
-            quotes.remove(random_quote)
+        random_quote = random.choice(quotes)
 
-            with open('preparedQuotes.txt', 'w', encoding='utf-8-sig') as quotesf:
-                quotesf.write('%'.join(quotes))
+        # Remove the quote from the list
+        quotes.remove(random_quote)
 
-            return random_quote
+        with open('preparedQuotes.txt', 'w', encoding='utf-8-sig') as quotesf:
+            quotesf.write('%'.join(quotes))
+
+        return random_quote
 
     except FileNotFoundError:
-        return "Couldn't find the file, Boss."
+        print("Couldn't find the file, Boss.")
 
-def post_to_bluesky(quote):
+def post_to_bluesky():
     bluesky_username = 'josedsferreira@gmail.com'
     bluesky_password = os.getenv('bs_pw')
     """
@@ -58,20 +51,24 @@ def post_to_bluesky(quote):
     if you are using linux: export bs_pw="your password here"
     if you are using windows: set bs_pw="your password here"
     """
+    quote = get_random_quote()
     session = BskySession(bluesky_username, bluesky_password)
     post = post_text(session, quote)
-    print("Boss, task accomplished!")
+    now = datetime.now()
+    print(f"Boss, task accomplished at {now.strftime('%H:%M')}!")
 
 now = datetime.now()
 print(f"Boss, starting operation at {now.strftime('%H:%M')}...")
 prepare_quotes()
 
 # Schedule the post_to_bluesky function to run at a specific time
-schedule.every().day.at("14:30").do(post_to_bluesky, get_random_quote())
+sleepTime = 60 #seconds
+scheduledTime = "18:30"
+schedule.every().day.at(scheduledTime).do(post_to_bluesky)
 
 while True:
     # Check whether a scheduled task is pending to run or not
     schedule.run_pending()
-    time.sleep(7200) # wait two hours before checking again
-    now = datetime.now()
-    print(f"Boss, checking for scheduled tasks at {now.strftime('%H:%M')}...")
+    time.sleep(sleepTime)
+    #now = datetime.now()
+    #print(f"Boss, checking for scheduled tasks at {now.strftime('%H:%M')}...")

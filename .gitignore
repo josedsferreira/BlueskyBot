@@ -1,2 +1,16 @@
 /preparedQuotes.txt
 /quotes.txt
+/f1Bot.py
+```
+node_modules
+package-lock.json
+package.json
+bbc-to-bluesky-main/index.js
+bbc-to-bluesky-main/LICENSE
+bbc-to-bluesky-main/README.md
+RP ip.txt
+.env
+f1bot.bat
+f1_rss_bot.py
+rssBot_ogp_test.py
+test.bat
